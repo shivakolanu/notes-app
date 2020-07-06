@@ -1,0 +1,66 @@
+<div class="d-flex align-items-center top-content">
+    <div *ngIf="(notes | async)?.length!=0"
+        class="hamburger-icon d-flex align-items-center justify-content-center h-100" (click)="toggleSidebar()">
+        <img class="img" src="../assets/hamburger.png">
+    </div>
+    <button class="btn btn-primary create-note" (click)="showNewNote()">New Note</button>
+    <input class="form-control search-input" type="text" name="search" [(ngModel)]="searchText" autocomplete="off"
+        placeholder="Search">
+</div>
+<div class="d-flex content-block">
+    <div *ngIf="(notes | async)?.length!=0" class="left-content" [ngClass]="(sidebarToggle == !true)?'open':'close'">
+        <div class="notes-list" *ngFor="let note of notes | async | filter:searchText">
+            <div class="note" (click)="showEditNote(note)">
+                <h4 class="note-title">{{note.title}}</h4>
+                <div class="d-flex">
+                    <span class="date-time">{{note.date | date:"h:mma"}}</span>
+                    <span *ngIf="note.description !== ''" class="note-description">{{note.description}}</span>
+                    <span *ngIf="note.description == ''" class="note-description">No additional text</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="right-content" [ngClass]="(sidebarToggle == !true)?'left-content-open':'left-content-close'">
+        <div *ngIf="editNote">
+
+            <h4 class="text-center mt-0">{{editedNote.date | date:"MMMM dd , yyyy 'at' h:mma"}}</h4>
+            <div class="imgs-block">
+                <img (click)="deleteNote(editedNote)" class="img del-img" src="../assets/delete.png">
+                <img (click)="toggleNoteEdit()" class="img edit-img" src="../assets/edit.png">
+            </div>
+            <form name="form" #editForm="ngForm">
+                <p>
+                    <input class="form-control" [disabled]="!noteEditEnable" [(ngModel)]="editedNote.title"
+                        (input)="onTitleChange(editedNote)" name="title" #title="ngModel">
+                </p>
+                <p>
+                    <textarea class="form-control" [disabled]="!noteEditEnable" [(ngModel)]="editedNote.description"
+                        (input)="onDescriptionChange(editedNote)" name="description" #description="ngModel"
+                        rows="4"></textarea>
+                </p>
+            </form>
+        </div>
+        <div *ngIf="newNote">
+            <form #newNoteForm="ngForm" (ngSubmit)="newNoteForm.valid && saveNote(model)">
+                <div class="form-group">
+                    <label>Title:</label>
+                    <input class="form-control" required [(ngModel)]="model.title" name="title" #title="ngModel">
+                    <div *ngIf="newNoteForm.submitted && !title.valid">
+                        <label class="mb-0 text-danger">This field is required.</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Description:</label>
+                    <textarea class="form-control" [(ngModel)]="model.description" name="description"
+                        rows="4"></textarea>
+                </div>
+                <p>
+                    <button type="button" class="btn btn-secondary" (click)="cancelNewNote()">Cancel</button>
+                    <button type="submit" class="btn btn-primary submit-btn">Submit</button>
+                </p>
+            </form>
+        </div>
+    </div>
+
+</div>
