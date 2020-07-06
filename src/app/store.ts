@@ -7,14 +7,6 @@ export interface IAppState {
 }
 
 export const INITIAL_STATE: IAppState = {
-    // notes: [JSON.parse(localStorage.getItem("notesList"))]
-    // if(JSON.parse(localStorage.getItem("notesList")) == null){
-    //     notes: [JSON.parse(localStorage.getItem("notesList"))]
-    // }
-    // else{
-    //     notes: [ ]
-    // }
-    // notes: []
     notes: getIntialState()
 }
 
@@ -36,7 +28,10 @@ export function rootReducer(state: IAppState, action): IAppState {
             return addedNote;
         case actions.REMOVE_NOTE:
             var removedNote = Object.assign({}, state, {
-                notes: state.notes.filter(t => t.id !== action.note.id),
+                // notes: state.notes.filter(t => t.id !== action.note.id)
+                notes: state.notes
+                .filter(i => i !== action.note)
+                .map((i, idx) => (i.id = (idx + 1), i))
             })
             localStorage.setItem("notesList", JSON.stringify(removedNote));
             return removedNote;
